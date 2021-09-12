@@ -1,0 +1,95 @@
+$date
+  Sun Sep 12 11:09:39 2021
+$end
+$version
+  GHDL v0
+$end
+$timescale
+  1 fs
+$end
+$scope module standard $end
+$upscope $end
+$scope module std_logic_1164 $end
+$upscope $end
+$scope module numeric_std $end
+$upscope $end
+$scope module mux_tb $end
+$var reg 4 ! i_data_0[3:0] $end
+$var reg 4 " i_data_1[3:0] $end
+$var reg 4 # i_data_2[3:0] $end
+$var reg 4 $ i_data_3[3:0] $end
+$var reg 4 % o_y[3:0] $end
+$var integer 32 & s $end
+$scope module mux_inst $end
+$var reg 4 ' i_data_0[3:0] $end
+$var reg 4 ( i_data_1[3:0] $end
+$var reg 4 ) i_data_2[3:0] $end
+$var reg 4 * i_data_3[3:0] $end
+$var integer 32 + s $end
+$var reg 4 , o_y[3:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+b0010 !
+b0101 "
+b1010 #
+b1111 $
+b0010 %
+b0 &
+b0010 '
+b0101 (
+b1010 )
+b1111 *
+b0 +
+b0010 ,
+#5000000
+b0101 %
+b1 &
+b1 +
+b0101 ,
+#10000000
+b1010 %
+b10 &
+b10 +
+b1010 ,
+#15000000
+b1111 %
+b11 &
+b11 +
+b1111 ,
+#20000000
+b0101 %
+b1 &
+b1 +
+b0101 ,
+#25000000
+b1010 %
+b10 &
+b10 +
+b1010 ,
+#30000000
+b1111 %
+b11 &
+b11 +
+b1111 ,
+#35000000
+b0101 %
+b1 &
+b1 +
+b0101 ,
+#40000000
+b1010 %
+b10 &
+b10 +
+b1010 ,
+#45000000
+b1111 %
+b11 &
+b11 +
+b1111 ,
+#50000000
+b0101 %
+b1 &
+b1 +
+b0101 ,
