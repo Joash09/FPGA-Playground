@@ -7,4 +7,4 @@ docker run -it --rm -v $PWD:/work -w /work hdlc/ghdl ghdl -r mux_tb --vcd=mux.vc
 gtkwave mux.vcd
 ```
 
-![Simulation](https://raw.githubusercontent.com/Joash09/FPGA-Playground/main/Results/sim_results.png)
+![Simulation](https://raw.githubusercontent.com/Joash09/FPGA-Playground/main/Multiplexers/Results/sim_results.png)
