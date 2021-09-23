@@ -67,11 +67,12 @@ begin
 	end process;
 
 
-	stim_proc: process(wr_clk)
+	stim_proc: process
 	begin
-		if rising_edge(wr_clk) then
+		wait until wr_clk <= '1';
+		i_data_wr  <= X'5';
+		i_write_en <= '1';
 
-		end if;
 	end process;
 
 
