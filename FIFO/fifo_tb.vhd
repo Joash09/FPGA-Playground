@@ -14,11 +14,11 @@ architecture arch of fifo_tb is
 		Port(
 				 reset: in std_logic;
 				 wr_clk: in std_logic;
-				 i_data_wr: in std_logic_vector(g_WIDTH-1 downto 0);
+				 i_data_wr: in unsigned(g_WIDTH-1 downto 0);
 				 i_write_en: in std_logic;
 				 o_full: out std_logic;
 				 rd_clk: in std_logic;
-				 o_data_rd: out std_logic_vector(g_WIDTH-1 downto 0);
+				 o_data_rd: out unsigned(g_WIDTH-1 downto 0);
 				 i_read_en: in std_logic;
 				 o_empty: out std_logic);
 	end component;
@@ -26,12 +26,10 @@ architecture arch of fifo_tb is
 	constant WR_CLK_PERIOD: time := 1 ns;
 	constant RD_CLK_PERIOD: time := 2 ns;
 	signal wr_clk, rd_clk: std_logic := '0';
+	signal reset: std_logic := '0';
 
-	signal clk: std_logic := '0';
-	signal reset: std_logic := '1'; -- Low active
-
-	signal i_data_wr: std_logic_vector(7 downto 0) := (others => '0');
-	signal o_data_rd: std_logic_vector(7 downto 0);
+	signal i_data_wr: unsigned(7 downto 0) := X"05";
+	signal o_data_rd: unsigned(7 downto 0);
 	signal i_write_en, i_read_en: std_logic := '0';
 	signal o_full, o_empty: std_logic;
 
@@ -42,7 +40,7 @@ begin
 	generic map(g_WIDTH => 8,
 	g_DEPTH => 8)
 	port map(
-	reset=>not reset,
+	reset=>reset,
 	wr_clk=>wr_clk,
 	i_data_wr=>i_data_wr,
 	i_write_en=>i_write_en,
@@ -67,12 +65,23 @@ begin
 	end process;
 
 
-	stim_proc: process
+	write_proc: process(wr_clk)
 	begin
-		wait until wr_clk <= '1';
-		i_data_wr  <= X'5';
-		i_write_en <= '1';
 
+		if rising_edge(wr_clk) then
+			if not (o_full = '1') then 
+				i_write_en <= '1';
+				i_data_wr <= i_data_wr + 1;
+			end if;	
+		end if;
+
+	end process;
+
+	read_proc: process
+	begin
+		-- Wait arbitary long time and start reading FIFO
+		wait for 3 ns;
+		i_read_en <= '1';
 	end process;
 
 

@@ -10,12 +10,12 @@ entity fifo is
 	Port(
 			reset: in std_logic;
 			wr_clk: in std_logic;
-			i_data_wr: in std_logic_vector(g_WIDTH-1 downto 0);
+			i_data_wr: in unsigned(g_WIDTH-1 downto 0);
 			i_write_en: in std_logic;
 			o_full: out std_logic;
 
 			rd_clk: in std_logic;
-			o_data_rd: out std_logic_vector(g_WIDTH-1 downto 0);
+			o_data_rd: out unsigned(g_WIDTH-1 downto 0);
 			i_read_en: in std_logic;
 			o_empty: out std_logic);
 
@@ -23,7 +23,7 @@ end fifo;
 
 architecture arch of fifo is
 
-	type t_FIFO is array (0 to g_DEPTH-1) of std_logic_vector(g_WIDTH-1 downto 0);
+	type t_FIFO is array (0 to g_DEPTH-1) of unsigned(g_WIDTH-1 downto 0);
 	signal fifo : t_FIFO := (others => (others => '0'));
 
 	signal fifo_wr_index: integer range 0 to g_DEPTH-1 := 0;
@@ -72,7 +72,7 @@ begin
 			-- Update read index
 			-- Cannot read if FIFO is empty
 			if (i_read_en = '1' and fifo_empty = '0') then
-				if (fifo_rd_index = g_WIDTH) then
+				if (fifo_rd_index = g_WIDTH-1) then
 					fifo_rd_index <= 0;
 				else
 					fifo_rd_index <= fifo_rd_index + 1;
