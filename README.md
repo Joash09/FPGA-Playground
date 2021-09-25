@@ -6,11 +6,11 @@ Repo with a collection of FPGA related tid bits
 * Multiplexer
 * FIFO for crossing clock domains
 * Fibonacci Sequence Generator
+* Random Number Generator with LSFR
 
 ## Work in Progress
 
 * IEEE754 floating point arithmetic core
-* Random Number Generator with LSFR
 
 ## Wishlist
 
