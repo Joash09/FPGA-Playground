@@ -11,6 +11,7 @@ Repo with a collection of FPGA related tid bits
 ## Work in Progress
 
 * IEEE754 floating point arithmetic core
+* Signed 8 bit PolynomialCalculator with Horner's Rule
 
 ## Wishlist
 
