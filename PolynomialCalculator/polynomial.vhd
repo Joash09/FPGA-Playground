@@ -8,7 +8,7 @@ entity polynomial is
 		i_clk: in std_logic;
 		i_reset: in std_logic;
 		i_x: in signed(7 downto 0);
-		i_coeffients: in std_logic_vector(8*7-1 downto 0);
+		i_coeffients: in std_logic_vector(8*8-1 downto 0);
 		o_ready : out std_logic;
 		o_y: out signed(31 downto 0)
 	    );
@@ -33,18 +33,24 @@ begin
 
 		elsif rising_edge(i_clk) then
 
-			if cntrl = 0 and ready = '0' then
-				stage_result <= signed(i_coeffients(7 downto 0)) * i_x;
+			if ready = '0' then
 
-			elsif cntrl = 8 then -- Manage overflow
-				cntrl <= 0;
-				ready <= '1';
-				o_y <= stage_result;
-			else
-				stage_result <= signed(i_coeffients(8*cntrl+7 downto 8*cntrl)) + stage_result * i_x;
+				if cntrl = 0 then
+					stage_result <= (stage_result'range => '0') + signed(i_coeffients(7 downto 0)) * i_x;
+				else
+					-- stage_result <= signed(i_coeffients(8*cntrl+7 downto 8*cntrl)) + stage_result * i_x;
+					stage_result <= (stage_result'range => '0') + stage_result;
+				end if;
+
+				if cntrl = 7 then -- Manage overflow
+					cntrl <= 0;
+					ready <= '1';
+					o_y <= stage_result;
+				else
+					cntrl <= cntrl + 1;
+				end if;
+
 			end if;
-
-			cntrl <= cntrl + 1;
 
 		end if;
 	end process;
