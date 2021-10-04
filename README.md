@@ -7,6 +7,7 @@ Repo with a collection of FPGA related tid bits
 * FIFO for crossing clock domains
 * Fibonacci Sequence Generator
 * Random Number Generator with LSFR
+* Basic Microblaze Project
 
 ## Work in Progress
 
