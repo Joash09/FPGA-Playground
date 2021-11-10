@@ -4,57 +4,73 @@ use IEEE.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity polynomial is
-	port(
-		i_clk: in std_logic;
-		i_reset: in std_logic;
-		i_x: in signed(7 downto 0);
-		i_coeffients: in std_logic_vector(8*8-1 downto 0);
-		o_ready : out std_logic;
-		o_y: out signed(31 downto 0)
-	    );
+generic(
+	g_DEGREE: integer := 2;
+	g_FP_SIZE: integer := 8;
+	g_FP_FRAC_SIZE: integer := 7
+       );
+port(
+	i_x: in std_logic_vector(g_FP_SIZE-1 downto 0);
+	i_coeffients: in std_logic_vector((g_DEGREE*g_FP_SIZE)-1 downto 0);
+
+	o_result: out std_logic_vector(g_FP_SIZE-1 downto 0)
+    );
 end polynomial;
 
 architecture rtl of polynomial is
 
-	signal cntrl: integer range 0 to 7 := 0;
-	signal stage_result: signed(31 downto 0) := X"00000000";
-	signal ready: std_logic := '0';
+	-- Mult_Add Component
+	component mult_add
+	generic(
+	       g_WIDTH: integer := 32;
+	       g_FRAC_WIDTH: integer := 30
+       	);
+	port(
+	    i_x: in std_logic_vector(g_WIDTH-1 downto 0);
+	    i_a: in std_logic_vector(g_WIDTH-1 downto 0);
+	    i_b: in std_logic_vector(g_WIDTH-1 downto 0);
+	    o_result: out std_logic_vector(g_WIDTH-1 downto 0)
+	);
+	end component mult_add;
+
+	-- Simplifies working with the ceffients
+	type t_coeffients_arr is array (0 to g_DEGREE-1) of std_logic_vector(g_FP_SIZE-1 downto 0);
+	signal coeffients_arr : t_coeffients_arr;
+
+	-- Feeds the result from the previous to next mult_stage module
+	type t_stage_result is array (0 to g_DEGREE-1) of std_logic_vector(g_FP_SIZE-1 downto 0);
+	signal stages_arr : t_stage_result;
 
 begin
-	
-	process(i_clk) 
-	begin
-		if i_reset = '1' then
 
-			cntrl <= 0;
-			stage_result <= X"00000000";
-			ready <= '0';
-			o_y <= (others => '0');
+	gen_load_coeffients: for i in 0 to g_DEGREE-1 generate
+		coeffients_arr(i) <= i_coeffients((i*g_FP_SIZE)+g_FP_SIZE-1 downto i*g_FP_SIZE);
+	end generate;
 
-		elsif rising_edge(i_clk) then
+	mult_add_0 : mult_add
+	generic map(
+		g_WIDTH => g_FP_SIZE,
+		g_FRAC_WIDTH => g_FP_FRAC_SIZE
+	)
+	port map(
+		i_x => i_x,
+		i_a => coeffients_arr(0),
+		i_b => coeffients_arr(1),
+		o_result => stages_arr(0)
+	);
 
-			if ready = '0' then
-
-				if cntrl = 0 then
-					stage_result <= (stage_result'range => '0') + signed(i_coeffients(7 downto 0)) * i_x;
-				else
-					-- stage_result <= signed(i_coeffients(8*cntrl+7 downto 8*cntrl)) + stage_result * i_x;
-					stage_result <= (stage_result'range => '0') + stage_result;
-				end if;
-
-				if cntrl = 7 then -- Manage overflow
-					cntrl <= 0;
-					ready <= '1';
-					o_y <= stage_result;
-				else
-					cntrl <= cntrl + 1;
-				end if;
-
-			end if;
-
-		end if;
-	end process;
-
-	o_ready <= ready;
+	gen_mult_add: for i in 1 to g_DEGREE-1 generate
+		mult_add_i : mult_add
+		generic map(
+			g_WIDTH => g_FP_SIZE,
+			g_FRAC_WIDTH => g_FP_FRAC_SIZE
+		)
+		port map(
+			i_x => i_x,
+			i_a => stages_arr(i-1),
+			i_b => coeffients_arr(i+1),
+			o_result => stages_arr(i)
+		);
+	end generate;
 
 end architecture;
