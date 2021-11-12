@@ -9,57 +9,59 @@ end polynomial_tb;
 architecture rtl of polynomial_tb is
 
 	component polynomial
+	generic(
+		g_DEGREE: integer := 2;
+		g_FP_SIZE: integer := 32;
+		g_FP_FRAC_SIZE: integer := 30
+	);
 	port(
-		i_clk: in std_logic;
-		i_reset: in std_logic;
-		i_x: in signed(7 downto 0);
-		i_coeffients: in std_logic_vector(8*8-1 downto 0);
-		o_ready : out std_logic;
-		o_y: out signed(31 downto 0)
-	    );
+		i_x: in std_logic_vector(g_FP_SIZE-1 downto 0);
+		i_coeffients: in std_logic_vector((g_DEGREE*g_FP_SIZE)-1 downto 0);
+		o_result: out std_logic_vector(g_FP_SIZE-1 downto 0)
+	);
 	end component polynomial;
 
+	-- For simulation
 	constant CLK_PERIOD : time := 5 ns;
-
-	signal i_clk, i_reset : std_logic := '0';
-	signal i_coeffients: std_logic_vector(8*8-1 downto 0);
-
-	signal o_ready: std_logic;
-	signal o_y: signed(31 downto 0);
+	signal clk : std_logic := '0';
 
 	-- Define your polynomial here
-	type t_coeffients is array(0 to 7) of signed(7 downto 0);
-	signal coeffients: t_coeffients := (X"00", X"00", X"00", X"00", X"00", X"01", X"02", X"03");
-	signal i_x: signed(7 downto 0) := X"00";
+	constant DEGREE : integer := 2;
+	constant FP_SIZE: integer := 32;
+	constant FP_FRAC_SIZE: integer := 30;
+
+	signal i_x, o_result : std_logic_vector(FP_SIZE-1 downto 0);
+	type t_coeffients_arr is array (0 to DEGREE) of std_logic_vector(FP_SIZE-1 downto 0);
+	constant coeffients_arr : t_coeffients_arr := (
+		X"00000000",
+		X"00000000",
+		X"00000000"
+	);
+	signal i_coeffients : std_logic_vector((FP_SIZE*DEGREE)-1 downto 0);
 
 begin
-
+	-- Unit under test
 	uut : polynomial
+	generic map(
+		g_DEGREE => DEGREE,
+		g_FP_SIZE => FP_SIZE,
+		g_FP_FRAC_SIZE => FP_FRAC_SIZE
+	)
 	port map(
-		i_clk => i_clk,
-		i_reset => i_reset,
 		i_x => i_x,
 		i_coeffients => i_coeffients,
-		o_ready => o_ready,
-		o_y => o_y
+		o_result => o_result
 	);
 
-	-- Assign co-effients
-	gen_coeff: for i in 0 to 7 generate
-		i_coeffients(8*i+7 downto 8*i) <= std_logic_vector(coeffients(i));
+	-- Serialize the coeffients
+	gen_coeff: for i in 0 to DEGREE-1 generate
+		i_coeffients((i*FP_SIZE)+FP_SIZE-1 downto i*FP_SIZE) <= std_logic_vector(coeffients_arr(i));
 	end generate gen_coeff;
 
 	clk_proc: process
 	begin
 		wait for CLK_PERIOD/2;
-		i_clk <= not i_clk;
+		clk <= not clk;
 	end process;
 
-	stim_proc: process
-	begin
-		i_reset <= '1';
-		wait for 10 ns;
-		i_reset <= '0';
-		wait;
-	end process;
 end rtl;
