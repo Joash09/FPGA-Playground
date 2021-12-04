@@ -14,60 +14,76 @@
 #define FRAC_SIZE 5
 #define INT_SIZE 9
 
-#define INT_START_I (FP_SIZE-2) // Save signed bit at index 31
-#define INT_END_I (INT_START_I-INT_SIZE)
-#define FRAC_START_I (INT_END_I-1)
-#define FRAC_END_I (FRAC_START_I-FRAC_SIZE) // This is still confusing
-
-int32_t decimal_to_fp(double decimal);
-double fp_to_decimal(int32_t fp);
+int32_t float_to_fp(float decimal);
+float fp_to_float(int32_t fp);
 int32_t mult_add(int32_t x, int32_t a, int32_t b);
+float mult_add_sim(float x, float a, float b);
 
 int main() {
 
-	// Print the fixed point structure
-	printf("Fixed point size:\t%d\tInt size:\t%d\tFraction size:\t%d\n", FP_SIZE, INT_SIZE, FRAC_SIZE);
-	printf("Int start index:\t%d\tEnd index:\t%d\n", INT_START_I, INT_END_I);
-	printf("Frac start index:\t%d\tEnd index:\t%d\n", FRAC_START_I, FRAC_END_I);
-
-	double test = -11.34;
-	int32_t test_fp = decimal_to_fp(test);
-	printf("Testing:\t%d", fp_to_decimal(test_fp));
-
-
+	float coeffients_sim[DEGREE+1];
+	float x_sim;
 	int32_t coeffients[DEGREE+1];
 	int32_t x;
-	float temp;
 
 	// Enter and store coeffients and x
 	for (int i = 0; i < DEGREE+1; i++) {
 		printf("Enter coeffient index %d:\t", i);
-		scanf("%d", &temp);
+		scanf("%f", &coeffients_sim[i]);
+		coeffients[i] = float_to_fp(coeffients_sim[i]);
 	}
 	printf("Enter x:\t");
-	scanf("%d", &temp);
+	scanf("%f", &x_sim);
+	x = float_to_fp(x_sim);
 
+	// Run through mult_add module
+	int32_t result;
+	float result_sim;
+	for (int i = 0; i < DEGREE+1; i++){
 
+		if (i == 0) {
+			result = mult_add(x, coeffients[i], coeffients[i+1]);
+			result_sim = mult_add_sim(x_sim, coeffients_sim[i], coeffients_sim[i+1]);
+		}
+		else {
+			result = mult_add(x, result, coeffients[i+1]);
+			result_sim = mult_add_sim(x, result_sim, coeffients_sim[i+1]);
+		}
 
+	}
+
+	printf("Expected result:\t%f\n", result_sim);
+	printf("Module's result:\t%d\n", float_to_fp(result));
 
 	return 0;
 }
 
 int32_t mult_add(int32_t x, int32_t a, int32_t b) {
 
-	// Multiply into 64 bit
+	// Multiply into 64 bit to accomodate all possible solutions
 	int64_t mult = (a*x) + b;
+
+	// Generate bit masks
+	int32_t int_mask = (1<<(INT_SIZE+1)) -1;
+	int32_t frac_mask = (1<<FRAC_SIZE) -1;
 
 	// Truncate
 	int32_t result;
-
+	result = (mult & int_mask<<(FP_SIZE-INT_SIZE)) | (mult & frac_mask);
+	
 	return result;
 }
 
-inline int32_t decimal_to_fp(double decimal) {
+float mult_add_sim(float x, float a, float b) {
+	return (a*x) + b;
+}
+
+// Conversion methods discovered at :
+// https://embeddedartistry.com/blog/2018/07/12/simple-fixed-point-conversion-in-c/
+int32_t float_to_fp(float decimal) {
 	return (int32_t) round(decimal * (1 << FRAC_SIZE));
 }
 
-inline double fp_to_decimal(int32_t fp) {
-	return ((double) fp / (double) (1<<FRAC_SIZE));
+inline float fp_to_float(int32_t fp) {
+	return ((float) fp / (float) (1<<FRAC_SIZE));
 }
