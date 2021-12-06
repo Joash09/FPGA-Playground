@@ -10,9 +10,9 @@
 #define DEGREE 2 // Calculate (a_1*x + a_2)x + a_3
 
 // Fixed point structure
-#define FP_SIZE 16
-#define FRAC_SIZE 5
-#define INT_SIZE 9
+#define FP_SIZE 32
+#define FRAC_SIZE 21
+#define INT_SIZE 10
 
 int32_t float_to_fp(float decimal);
 float fp_to_float(int32_t fp);
@@ -31,6 +31,7 @@ int main() {
 		printf("Enter coeffient index %d:\t", i);
 		scanf("%f", &coeffients_sim[i]);
 		coeffients[i] = float_to_fp(coeffients_sim[i]);
+		printf("Coeffient converted to fixed point and back:\t%f\n", fp_to_float(coeffients[i]));
 	}
 	printf("Enter x:\t");
 	scanf("%f", &x_sim);
@@ -39,7 +40,7 @@ int main() {
 	// Run through mult_add module
 	int32_t result;
 	float result_sim;
-	for (int i = 0; i < DEGREE+1; i++){
+	for (int i = 0; i < DEGREE; i++){
 
 		if (i == 0) {
 			result = mult_add(x, coeffients[i], coeffients[i+1]);
@@ -47,13 +48,13 @@ int main() {
 		}
 		else {
 			result = mult_add(x, result, coeffients[i+1]);
-			result_sim = mult_add_sim(x, result_sim, coeffients_sim[i+1]);
+			result_sim = mult_add_sim(x_sim, result_sim, coeffients_sim[i+1]);
 		}
 
 	}
 
 	printf("Expected result:\t%f\n", result_sim);
-	printf("Module's result:\t%d\n", float_to_fp(result));
+	printf("Module's result:\t%f\n", fp_to_float(result));
 
 	return 0;
 }
@@ -61,15 +62,11 @@ int main() {
 int32_t mult_add(int32_t x, int32_t a, int32_t b) {
 
 	// Multiply into 64 bit to accomodate all possible solutions
-	int64_t mult = (a*x) + b;
+	int64_t mult = (int64_t) a*x;
 
-	// Generate bit masks
-	int32_t int_mask = (1<<(INT_SIZE+1)) -1;
-	int32_t frac_mask = (1<<FRAC_SIZE) -1;
-
-	// Truncate
-	int32_t result;
-	result = (mult & int_mask<<(FP_SIZE-INT_SIZE)) | (mult & frac_mask);
+	// Truncate to extract only the most significant bits
+	int32_t result = (mult>>FRAC_SIZE) & 0xFFFFFFFF;
+	result = result + b;
 	
 	return result;
 }
