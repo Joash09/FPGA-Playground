@@ -31,11 +31,12 @@ int main() {
 		printf("Enter coeffient index %d:\t", i);
 		scanf("%f", &coeffients_sim[i]);
 		coeffients[i] = float_to_fp(coeffients_sim[i]);
-		printf("Coeffient converted to fixed point and back:\t%f\n", fp_to_float(coeffients[i]));
+		printf("Coeffient converted to fixed point and back:\t%x\t%f\n", coeffients[i],fp_to_float(coeffients[i]));
 	}
 	printf("Enter x:\t");
 	scanf("%f", &x_sim);
 	x = float_to_fp(x_sim);
+	printf("x input converted to fixed point and back:\t%x\t%f\n", x,fp_to_float(x));
 
 	// Run through mult_add module
 	int32_t result;
@@ -54,7 +55,7 @@ int main() {
 	}
 
 	printf("Expected result:\t%f\n", result_sim);
-	printf("Module's result:\t%f\n", fp_to_float(result));
+	printf("Module's result in fixed point and decimal:\t%x\t%f\n", result, fp_to_float(result));
 
 	return 0;
 }
