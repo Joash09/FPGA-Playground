@@ -23,7 +23,7 @@ end mult_add;
 architecture rtl of mult_add is
 
 	signal cnt : std_logic := '0';
-	signal a_x : std_logic_vector((g_WIDTH*2)-1 downto 0);
+	signal a_x, r_shifted_a_x : std_logic_vector((g_WIDTH*2)-1 downto 0);
 	signal truncated_prod : std_logic_vector(g_WIDTH-1 downto 0);
 
 	-- Constants for truncating
@@ -42,11 +42,18 @@ begin
 		a_x <= std_logic_vector(signed(i_a)*signed(i_x));
 	end process;
 
-	truncate: process(a_x)
+	shift_proc: process(a_x)
 	begin
-		truncated_prod <= a_x(a_x'high) & -- Keep sign bit
-				  a_x(INTGER_MSB_INDEX downto INTGER_LSB_INDEX) & -- Truncated integer part
-				  a_x(FRAC_MSB_INDEX downto FRAC_LSB_INDEX); -- Truncated fractional part
+		r_shifted_a_x <= std_logic_vector(shift_right(signed(a_x), g_FRAC_WIDTH));
+		-- truncated_prod <= shift_left(signed(a_x), g_FRAC_WIDTH);
+		-- truncated_prod <= a_x(a_x'high) & -- Keep sign bit
+		-- 		  a_x(INTGER_MSB_INDEX downto INTGER_LSB_INDEX) & -- Truncated integer part
+		-- 		  a_x(FRAC_MSB_INDEX downto FRAC_LSB_INDEX); -- Truncated fractional part
+	end process;
+
+	truncate_proc: process(r_shifted_a_x)
+	begin
+		truncated_prod <= r_shifted_a_x(g_WIDTH-1 downto 0);
 	end process;
 
 	add: process(truncated_prod)

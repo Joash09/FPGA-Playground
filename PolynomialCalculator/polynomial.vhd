@@ -7,11 +7,11 @@ entity polynomial is
 generic(
 	g_DEGREE: integer := 2;
 	g_FP_SIZE: integer := 32;
-	g_FP_FRAC_SIZE: integer := 30
+	g_FP_FRAC_SIZE: integer := 21
        );
 port(
 	i_x: in std_logic_vector(g_FP_SIZE-1 downto 0);
-	i_coeffients: in std_logic_vector((g_DEGREE*g_FP_SIZE)-1 downto 0);
+	i_coeffients: in std_logic_vector(((g_DEGREE+1)*g_FP_SIZE)-1 downto 0);
 
 	o_result: out std_logic_vector(g_FP_SIZE-1 downto 0)
     );
@@ -43,7 +43,7 @@ architecture rtl of polynomial is
 
 begin
 
-	gen_load_coeffients: for i in 0 to g_DEGREE-1 generate
+	gen_load_coeffients: for i in 0 to g_DEGREE generate
 		coeffients_arr(i) <= i_coeffients((i*g_FP_SIZE)+g_FP_SIZE-1 downto i*g_FP_SIZE);
 	end generate;
 
@@ -78,5 +78,7 @@ begin
 		end generate mult_add_i;
 
 	end generate;
+
+	o_result <= stages_arr(g_DEGREE-1);
 
 end architecture;

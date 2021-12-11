@@ -12,11 +12,11 @@ architecture rtl of polynomial_tb is
 	generic(
 		g_DEGREE: integer := 2;
 		g_FP_SIZE: integer := 32;
-		g_FP_FRAC_SIZE: integer := 30
+		g_FP_FRAC_SIZE: integer := 21
 	);
 	port(
 		i_x: in std_logic_vector(g_FP_SIZE-1 downto 0);
-		i_coeffients: in std_logic_vector((g_DEGREE*g_FP_SIZE)-1 downto 0);
+		i_coeffients: in std_logic_vector(((g_DEGREE+1)*g_FP_SIZE)-1 downto 0);
 		o_result: out std_logic_vector(g_FP_SIZE-1 downto 0)
 	);
 	end component polynomial;
@@ -28,16 +28,16 @@ architecture rtl of polynomial_tb is
 	-- Define your polynomial here
 	constant DEGREE : integer := 2;
 	constant FP_SIZE: integer := 32;
-	constant FP_FRAC_SIZE: integer := 30;
+	constant FP_FRAC_SIZE: integer := 21;
 
 	signal i_x, o_result : std_logic_vector(FP_SIZE-1 downto 0);
 	type t_coeffients_arr is array (0 to DEGREE) of std_logic_vector(FP_SIZE-1 downto 0);
 	constant coeffients_arr : t_coeffients_arr := (
-		X"0000964b", -- -0.825836
-		X"00004452", -- 0.533752
-		X"00009c83" -- -0.777252
+		X"fffc1062", -- -0.123
+		X"0010bc6b", -- 0.523
+		X"001451ec" -- 0.635
 	);
-	signal i_coeffients : std_logic_vector((FP_SIZE*DEGREE)-1 downto 0);
+	signal i_coeffients : std_logic_vector(((DEGREE+1)*FP_SIZE)-1 downto 0);
 
 begin
 	-- Unit under test
@@ -54,12 +54,12 @@ begin
 	);
 
 	-- Serialize the coeffients
-	gen_coeff: for i in 0 to DEGREE-1 generate
+	gen_coeff: for i in 0 to DEGREE generate
 		i_coeffients((i*FP_SIZE)+FP_SIZE-1 downto i*FP_SIZE) <= std_logic_vector(coeffients_arr(i));
 	end generate gen_coeff;
 
 	-- Assign x input
-	i_x <= X"00006176"; -- 0.761414
+	i_x <= X"fff26666"; -- 0.761414
 
 	clk_proc: process
 	begin
