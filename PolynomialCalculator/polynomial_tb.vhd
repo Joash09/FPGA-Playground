@@ -34,8 +34,8 @@ architecture rtl of polynomial_tb is
 	type t_coeffients_arr is array (0 to DEGREE) of std_logic_vector(FP_SIZE-1 downto 0);
 	constant coeffients_arr : t_coeffients_arr := (
 		X"fffc1062", -- -0.123
-		X"0010bc6b", -- 0.523
-		X"001451ec" -- 0.635
+		X"00140000", -- 0.625
+		X"0007d70a" -- 0.245
 	);
 	signal i_coeffients : std_logic_vector(((DEGREE+1)*FP_SIZE)-1 downto 0);
 
@@ -59,7 +59,7 @@ begin
 	end generate gen_coeff;
 
 	-- Assign x input
-	i_x <= X"fff26666"; -- 0.761414
+	i_x <= X"000ba5e3"; -- 0.364
 
 	clk_proc: process
 	begin

@@ -20,11 +20,18 @@ I represented the numbers using a fixed point representation. The representation
 
 More info on fixed point representation can be found here: https://courses.cs.washington.edu/courses/cse467/08au/labs/l5/fp.pdf
 
+Structure
+=========
+
+The sw directory contains a C program which was used to verify the results of the RTL design. Following Horner's rule, the RTL design contains a mult\_add.vhd module which is strung together depending on the degree of the polynomial. The degree of the polynomial and structure of fixed point representation is defined using generics when instantiating the module (see polynomial\_tb.vhd). 
+
 Results
 =======
 
+![Software Simulation](https://raw.githubusercontent.com/Joash09/FPGA-Playground/main/PolynomialCalculator/Results/SoftwareSimResult.png)
+![RTL Simulation](https://raw.githubusercontent.com/Joash09/FPGA-Playground/main/PolynomialCalculator/Results/VHDLResult.png)
 
-Wishlist / Todo
-==============
+Wishlist
+========
 
 Horner's rule is a sequential operation. We can parallelise evaluating polynomial equations increasing speedup but also increasing the amount of space our design takes.
