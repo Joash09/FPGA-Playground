@@ -25,6 +25,12 @@ Structure
 
 The sw directory contains a C program which was used to verify the results of the RTL design. Following Horner's rule, the RTL design contains a mult\_add.vhd module which is strung together depending on the degree of the polynomial. The degree of the polynomial and structure of fixed point representation is defined using generics when instantiating the module (see polynomial\_tb.vhd). 
 
+Run project with Make, Docker and GTKWave
+```
+make compile
+make sim
+```
+
 Results
 =======
 
