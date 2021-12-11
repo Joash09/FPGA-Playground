@@ -3,18 +3,19 @@ Repo with a collection of FPGA modules which I have implemented for fun
 
 ## Completed
 
-* Multiplexer
+* Generic Fixed point PolynomialCalculator with Horner's Rule
 * FIFO for crossing clock domains
-* Fibonacci Sequence Generator
-* Random Number Generator with LSFR
 * Basic Microblaze Project
+* Random Number Generator with Linear Feedback Shift Register (LFSR)
+* Fibonacci Sequence Generator
+* Multiplexer
 
 ## Work in Progress
 
 * IEEE754 floating point arithmetic core
-* Signed 8 bit PolynomialCalculator with Horner's Rule
 
 ## Wishlist
 
+* CORDIC module to sine and cosine calculations
 * Integrate RISC-V/Mircoblaze core with my own IP
 * I2C and SPI interfaces
