@@ -1,0 +1,3 @@
+[submodule "tiny_ALU"]
+	path = tiny_ALU
+	url = https://github.com/Joash09/tiny_ALU
